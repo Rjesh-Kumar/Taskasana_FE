@@ -1,0 +1,18 @@
+.card-body {
+  word-wrap: break-word; /* long words wrap honge */
+  overflow: hidden;       /* container se bahar na jaye */
+  text-overflow: ellipsis; /* optional: extra text ... me dikhaye */
+}
+ul li {
+  word-break: break-word;
+}
+
+.project-card {
+  min-height: 150px;
+  border-radius: 12px;
+  transition: 0.2s ease;
+}
+
+.project-card:hover {
+  transform: translateY(-4px);
+}
