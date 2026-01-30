@@ -1,4 +1,4 @@
-const BASE_URL = "https://taskasana-be.vercel.app/api/";
+const BASE_URL = "https://taskasana-be.vercel.app/api";
 
 export const api = async (url, method = "GET", body = null) => {
   const token = localStorage.getItem("token");
