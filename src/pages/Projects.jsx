@@ -9,17 +9,17 @@ export default function Projects() {
   const [search, setSearch] = useState("");
 
   const loadProjects = async () => {
-  try {
-    const data = await api("/project"); // ✅ correct route
-    setProjects(data);
-  } catch (err) {
-    console.error(err);
-  }
-};
+    try {
+      const data = await api("/project");
+      setProjects(data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   useEffect(() => {
-  loadProjects();
-}, []);
+    loadProjects();
+  }, []);
 
   const filtered = projects.filter(p =>
     p.name.toLowerCase().includes(search.toLowerCase())
@@ -32,6 +32,7 @@ export default function Projects() {
           <input
             className="form-control me-2"
             placeholder="Search projects..."
+            value={search}
             onChange={(e) => setSearch(e.target.value)}
           />
           <button className="btn btn-primary">Search</button>
@@ -41,7 +42,11 @@ export default function Projects() {
         </button>
       </div>
 
-      {filtered.map(p => <ProjectCard key={p._id} project={p} />)}
+      {filtered.length > 0 ? (
+        filtered.map(p => <ProjectCard key={p._id} project={p} />)
+      ) : (
+        <p className="text-center mt-4 text-muted">No Projects found</p>
+      )}
 
       <CreateProjectModal show={show} handleClose={() => setShow(false)} refresh={loadProjects} />
     </div>

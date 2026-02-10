@@ -9,7 +9,8 @@ export default function CreateProjectModal({ show, handleClose, refresh }) {
 
   const [form, setForm] = useState({
     name: "",
-    description: ""
+    description: "",
+    status: "To Do", // ✅ default status
   });
 
   const handleSubmit = async () => {
@@ -20,7 +21,6 @@ export default function CreateProjectModal({ show, handleClose, refresh }) {
     try {
       const res = await api("/project/create", "POST", form);
 
-      // ✅ Correct response check
       if (res.project?._id) {
         toast.success("🎉 Project created successfully!");
         handleClose();
@@ -29,8 +29,7 @@ export default function CreateProjectModal({ show, handleClose, refresh }) {
         setTimeout(() => {
           navigate("/projects");
         }, 1200);
-      }
-      else {
+      } else {
         toast.error("❌ Failed to create project");
       }
     } catch (err) {
@@ -58,6 +57,18 @@ export default function CreateProjectModal({ show, handleClose, refresh }) {
           value={form.description}
           onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
+
+        {/* ✅ Status Dropdown */}
+        <Form.Select
+          className="mb-2"
+          value={form.status}
+          onChange={(e) => setForm({ ...form, status: e.target.value })}
+        >
+          <option value="To Do">To Do</option>
+          <option value="In-progress">In-progress</option>
+          <option value="Completed">Completed</option>
+          <option value="Blocked">Blocked</option>
+        </Form.Select>
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleSubmit}>Create</Button>

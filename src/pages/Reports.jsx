@@ -1,5 +1,18 @@
 import { useEffect, useState } from "react";
 import { api } from "../api/api";
+import { Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  Title,
+  Tooltip,
+  Legend,
+} from "chart.js";
+
+// Register chart components
+ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 export default function Reports() {
   const [data, setData] = useState(null);
@@ -9,6 +22,29 @@ export default function Reports() {
   }, []);
 
   if (!data) return <p>Loading reports...</p>;
+
+  // Prepare chart data
+  const teamChartData = {
+    labels: data.closedByTeam.map(t => t._id),
+    datasets: [
+      {
+        label: "Tasks Closed by Team",
+        data: data.closedByTeam.map(t => t.count),
+        backgroundColor: "rgba(75, 192, 192, 0.6)",
+      },
+    ],
+  };
+
+  const ownerChartData = {
+    labels: data.closedByOwner.map(o => o._id),
+    datasets: [
+      {
+        label: "Tasks Closed by Owner",
+        data: data.closedByOwner.map(o => o.count),
+        backgroundColor: "rgba(153, 102, 255, 0.6)",
+      },
+    ],
+  };
 
   return (
     <div className="container mt-4">
@@ -26,16 +62,12 @@ export default function Reports() {
 
       <div className="card p-3 mb-3">
         <h5>Tasks Closed by Team</h5>
-        {data.closedByTeam.map(t => (
-          <div key={t._id}>Team: {t._id} — {t.count} tasks</div>
-        ))}
+        <Bar data={teamChartData} />
       </div>
 
       <div className="card p-3 mb-3">
         <h5>Tasks Closed by Owner</h5>
-        {data.closedByOwner.map(o => (
-          <div key={o._id}>User: {o._id} — {o.count} tasks</div>
-        ))}
+        <Bar data={ownerChartData} />
       </div>
     </div>
   );
