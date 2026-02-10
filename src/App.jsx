@@ -1,4 +1,4 @@
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom"; // ✅ FIXED IMPORT
 import { AuthProvider } from "./context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,7 +17,7 @@ import Layout from "./components/Layout";
 function App() {
   return (
     <AuthProvider>
-      {/* CHANGE: BrowserRouter → HashRouter */}
+      {/* ✅ Now HashRouter is imported */}
       <HashRouter>
         <ToastContainer position="top-right" autoClose={2000} />
         <Routes>
