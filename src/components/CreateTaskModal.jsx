@@ -5,7 +5,6 @@ import api from "../api/api";
 export default function CreateTaskModal({ show, handleClose, refresh }) {
   const [projects, setProjects] = useState([]);
   const [teams, setTeams] = useState([]);
-  const [members, setMembers] = useState([]); // members of selected team
 
   const initialState = {
     name: "",
@@ -15,7 +14,6 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
     timeToComplete: "",
     status: "To Do",
     priority: "Medium",
-    owners: [],
     description: "",
   };
 
@@ -29,29 +27,10 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
     }
   }, [show]);
 
-  // Update members when team changes
-  useEffect(() => {
-    if (form.teamId) {
-      const team = teams.find(t => t._id === form.teamId);
-      if (team) setMembers(team.members || []);
-      else setMembers([]);
-      setForm(f => ({ ...f, owners: [] })); // reset owners
-    } else {
-      setMembers([]);
-      setForm(f => ({ ...f, owners: [] }));
-    }
-  }, [form.teamId, teams]);
-
   const handleSubmit = async () => {
     // Validation
     if (!form.name || !form.projectId || !form.teamId || !form.dueDate || !form.timeToComplete) {
       return alert("Please fill all required fields");
-    }
-
-    // Ensure all selected owners are part of the team
-    const invalidOwners = form.owners.filter(o => !members.includes(o));
-    if (invalidOwners.length > 0) {
-      return alert("One or more selected owners are not members of the selected team");
     }
 
     try {
@@ -59,7 +38,6 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
         name: form.name,
         projectId: form.projectId,
         teamId: form.teamId,
-        owners: form.owners,
         dueDate: form.dueDate,
         timeToComplete: Number(form.timeToComplete),
         status: form.status,
@@ -161,27 +139,6 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
             ))}
           </Form.Select>
         </Form.Group>
-
-        {/* Select Owners */}
-        {members.length > 0 && (
-          <Form.Group className="mb-3">
-            <Form.Label>Assign Owners</Form.Label>
-            <Form.Select
-              multiple
-              value={form.owners}
-              onChange={e =>
-                setForm({
-                  ...form,
-                  owners: Array.from(e.target.selectedOptions, option => option.value)
-                })
-              }
-            >
-              {members.map(m => (
-                <option key={m} value={m}>{m}</option>
-              ))}
-            </Form.Select>
-          </Form.Group>
-        )}
 
         {/* Due Date + Estimated Time */}
         <Row>
