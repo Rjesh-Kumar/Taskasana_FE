@@ -3,8 +3,7 @@ import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import api from "../api/api";
 
 export default function CreateTaskModal({ show, handleClose, refresh }) {
-  const [allProjects, setAllProjects] = useState([]); // ALL projects from API
-  const [filteredProjects, setFilteredProjects] = useState([]); // Projects filtered by selected team
+  const [projects, setProjects] = useState([]);
   const [teams, setTeams] = useState([]);
 
   const initialState = {
@@ -20,42 +19,13 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
 
   const [form, setForm] = useState(initialState);
 
-  // Load ALL projects and teams when modal opens
+  // Load projects and teams when modal opens
   useEffect(() => {
     if (show) {
-      api("/project")
-        .then(data => {
-          setAllProjects(data);
-          setFilteredProjects(data); // Initially show all projects
-        })
-        .catch(err => console.error(err));
-      
-      api("/team")
-        .then(setTeams)
-        .catch(err => console.error(err));
+      api("/project").then(setProjects).catch(err => console.error(err));
+      api("/team").then(setTeams).catch(err => console.error(err));
     }
   }, [show]);
-
-  // When team changes, filter projects for that team
-  useEffect(() => {
-    if (form.teamId) {
-      const filtered = allProjects.filter(
-        project => project.team && project.team._id === form.teamId
-      );
-      setFilteredProjects(filtered);
-      
-      // Reset project selection if current project doesn't belong to selected team
-      if (form.projectId) {
-        const currentProject = allProjects.find(p => p._id === form.projectId);
-        if (currentProject && currentProject.team._id !== form.teamId) {
-          setForm(prev => ({ ...prev, projectId: "" }));
-        }
-      }
-    } else {
-      // If no team selected, show all projects
-      setFilteredProjects(allProjects);
-    }
-  }, [form.teamId, allProjects]);
 
   const handleSubmit = async () => {
     // Validation
@@ -88,7 +58,6 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
     handleClose();
   };
 
-  // SWAP THE ORDER: Team FIRST, then Project
   return (
     <Modal show={show} onHide={handleCloseModal} centered>
       <Modal.Header closeButton>
@@ -96,53 +65,27 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
       </Modal.Header>
 
       <Modal.Body>
-        {/* TEAM SELECTION - MUST COME FIRST */}
+        {/* Select Project */}
         <Form.Group className="mb-3">
-          <Form.Label>Select Team *</Form.Label>
-          <Form.Select
-            value={form.teamId}
-            onChange={e => setForm({ ...form, teamId: e.target.value, projectId: "" })}
-            required
-          >
-            <option value="">Select Team</option>
-            {teams.map(t => (
-              <option key={t._id} value={t._id}>{t.name}</option>
-            ))}
-          </Form.Select>
-        </Form.Group>
-
-        {/* PROJECT SELECTION - FILTERED BY TEAM */}
-        <Form.Group className="mb-3">
-          <Form.Label>Select Project *</Form.Label>
+          <Form.Label>Select Project</Form.Label>
           <Form.Select
             value={form.projectId}
             onChange={e => setForm({ ...form, projectId: e.target.value })}
-            disabled={!form.teamId} // Disable until team is selected
-            required
           >
-            <option value="">{form.teamId ? "Select Project" : "Select a team first"}</option>
-            {filteredProjects.map(p => (
+            <option value="">Select Project</option>
+            {projects.map(p => (
               <option key={p._id} value={p._id}>{p.name}</option>
             ))}
-            {form.teamId && filteredProjects.length === 0 && (
-              <option disabled>No projects found in this team</option>
-            )}
           </Form.Select>
-          {form.teamId && filteredProjects.length === 0 && (
-            <Form.Text className="text-warning">
-              This team has no projects. Create a project first.
-            </Form.Text>
-          )}
         </Form.Group>
 
         {/* Task Name */}
         <Form.Group className="mb-3">
-          <Form.Label>Task Name *</Form.Label>
+          <Form.Label>Task Name</Form.Label>
           <Form.Control
             value={form.name}
             placeholder="Enter Task Name"
             onChange={e => setForm({ ...form, name: e.target.value })}
-            required
           />
         </Form.Group>
 
@@ -183,30 +126,41 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
           </Form.Select>
         </Form.Group>
 
+        {/* Select Team */}
+        <Form.Group className="mb-3">
+          <Form.Label>Select Team</Form.Label>
+          <Form.Select
+            value={form.teamId}
+            onChange={e => setForm({ ...form, teamId: e.target.value })}
+          >
+            <option value="">Select Team</option>
+            {teams.map(t => (
+              <option key={t._id} value={t._id}>{t.name}</option>
+            ))}
+          </Form.Select>
+        </Form.Group>
+
         {/* Due Date + Estimated Time */}
         <Row>
           <Col>
             <Form.Group className="mb-3">
-              <Form.Label>Due Date *</Form.Label>
+              <Form.Label>Due Date</Form.Label>
               <Form.Control
                 type="date"
                 value={form.dueDate}
                 onChange={e => setForm({ ...form, dueDate: e.target.value })}
-                required
               />
             </Form.Group>
           </Col>
 
           <Col>
             <Form.Group className="mb-3">
-              <Form.Label>Estimated Time (Days) *</Form.Label>
+              <Form.Label>Estimated Time (Days)</Form.Label>
               <Form.Control
                 type="number"
-                min="1"
                 placeholder="Enter Time in Days"
                 value={form.timeToComplete}
                 onChange={e => setForm({ ...form, timeToComplete: e.target.value })}
-                required
               />
             </Form.Group>
           </Col>
