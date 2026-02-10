@@ -36,6 +36,15 @@ export default function Login() {
           <input type="password" className="form-control mb-3" placeholder="Password"
             onChange={e => setPassword(e.target.value)} />
           <button className="btn btn-primary w-100">Login</button>
+          <p className="text-center mt-3">
+            Don’t have an account? <span
+              style={{ color: "blue", cursor: "pointer" }}
+              onClick={() => navigate("/register")}
+            >
+              Register
+            </span>
+          </p>
+
         </form>
       </div>
     </div>

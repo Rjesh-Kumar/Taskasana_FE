@@ -17,14 +17,20 @@ export const api = async (url, method = "GET", body = null) => {
   }
 
   const res = await fetch(BASE_URL + url, options);
+  const data = await res.json();
 
   // Handle expired token / auth errors
-  if (res.status === 401) {
-    localStorage.removeItem("token");
-    window.location.href = "/login";
+  // if (res.status === 401) {
+  //   localStorage.removeItem("token");
+  //   window.location.href = "/login";
+  // }
+   if (!res.ok) {
+    throw new Error(data.message || "Something went wrong");
   }
 
-  return res.json();
+  return data;
+
+ // return res.json();
 };
 
 export default api;
