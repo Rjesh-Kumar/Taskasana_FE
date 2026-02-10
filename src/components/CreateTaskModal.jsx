@@ -13,43 +13,45 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
     teamId: "",
     dueDate: "",
     timeToComplete: "",
-    status: "To Do",        // ✅ matches backend enum
+    status: "To Do",
     priority: "Medium",
-    owners: []
+    owners: [],
+    description: "",
   };
-   
+
   const [form, setForm] = useState(initialState);
 
   // Load projects and teams when modal opens
   useEffect(() => {
     if (show) {
-      api("/project").then(setProjects);
-      api("/team").then(setTeams);
+      api("/project").then(setProjects).catch(err => console.error(err));
+      api("/team").then(setTeams).catch(err => console.error(err));
     }
   }, [show]);
 
-  // Load team members when team changes
+  // Update members when team changes
   useEffect(() => {
     if (form.teamId) {
       const team = teams.find(t => t._id === form.teamId);
       if (team) setMembers(team.members || []);
       else setMembers([]);
-      setForm(f => ({ ...f, owners: [] })); // reset owners when team changes
+      setForm(f => ({ ...f, owners: [] })); // reset owners
+    } else {
+      setMembers([]);
+      setForm(f => ({ ...f, owners: [] }));
     }
   }, [form.teamId, teams]);
 
   const handleSubmit = async () => {
     // Validation
     if (!form.name || !form.projectId || !form.teamId || !form.dueDate || !form.timeToComplete) {
-      alert("Please fill all required fields");
-      return;
+      return alert("Please fill all required fields");
     }
 
-    // Validate owners are part of team
+    // Ensure all selected owners are part of the team
     const invalidOwners = form.owners.filter(o => !members.includes(o));
     if (invalidOwners.length > 0) {
-      alert("One or more selected owners are not members of the selected team");
-      return;
+      return alert("One or more selected owners are not members of the selected team");
     }
 
     try {
@@ -65,11 +67,11 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
         description: form.description || ""
       });
 
-      if (refresh) refresh();
+      if (refresh) refresh(); // refresh parent dashboard
       handleCloseModal();
     } catch (err) {
-      console.error(err);
-      alert("Failed to create task: " + err.message);
+      console.error("Task creation error:", err);
+      alert("Failed to create task: " + (err.message || "Server error"));
     }
   };
 
@@ -113,7 +115,7 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
         <Form.Group className="mb-3">
           <Form.Label>Description (optional)</Form.Label>
           <Form.Control
-            value={form.description || ""}
+            value={form.description}
             placeholder="Task description"
             onChange={e => setForm({ ...form, description: e.target.value })}
           />

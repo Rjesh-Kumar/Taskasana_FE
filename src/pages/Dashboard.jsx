@@ -144,7 +144,7 @@ export default function Dashboard() {
         )}
       </div>
 
-      <CreateProjectModal show={showProjectModal} handleClose={() => setShowProjectModal(false)} />
+      <CreateProjectModal show={showProjectModal} handleClose={() => setShowProjectModal(false)} refresh={fetchData}/>
       <CreateTaskModal show={showTaskModal} handleClose={() => setShowTaskModal(false)} refresh={fetchData} />
     </div>
   );

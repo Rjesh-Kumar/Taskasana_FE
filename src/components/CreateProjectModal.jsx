@@ -1,16 +1,13 @@
 import { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import { toast } from "react-toastify";
-import { useNavigate } from "react-router-dom";
 import api from "../api/api";
 
 export default function CreateProjectModal({ show, handleClose, refresh }) {
-  const navigate = useNavigate();
-
   const [form, setForm] = useState({
     name: "",
     description: "",
-    status: "To Do", // ✅ default status
+    status: "To Do",
   });
 
   const handleSubmit = async () => {
@@ -19,22 +16,13 @@ export default function CreateProjectModal({ show, handleClose, refresh }) {
     }
 
     try {
-      const res = await api("/project/create", "POST", form);
-
-      if (res.project?._id) {
-        toast.success("🎉 Project created successfully!");
-        handleClose();
-        refresh();
-
-        setTimeout(() => {
-          navigate("/projects");
-        }, 1200);
-      } else {
-        toast.error("❌ Failed to create project");
-      }
+      await api("/project/create", "POST", form);
+      toast.success("🎉 Project created successfully!");
+      if (refresh) refresh();  // reload projects immediately
+      handleClose();            // close modal
     } catch (err) {
       console.error(err);
-      toast.error("Server error while creating project");
+      toast.error(err.message || "Server error while creating project");
     }
   };
 
@@ -58,7 +46,6 @@ export default function CreateProjectModal({ show, handleClose, refresh }) {
           onChange={(e) => setForm({ ...form, description: e.target.value })}
         />
 
-        {/* ✅ Status Dropdown */}
         <Form.Select
           className="mb-2"
           value={form.status}
