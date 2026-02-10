@@ -16,9 +16,8 @@ import Layout from "./components/Layout";
 
 function App() {
   return (
-    <AuthProvider>
-      {/* ✅ Add basename="/" */}
-      <BrowserRouter basename="/">
+    <AuthProvider>   {/* ✅ WRAP WHOLE APP */}
+      <BrowserRouter>
         <ToastContainer position="top-right" autoClose={2000} />
         <Routes>
           <Route path="/" element={<Login />} />

@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import api from "../api/api";
-import { BsSearch } from "react-icons/bs";
 import ProjectCard from "../components/ProjectCard";
 import TaskCard from "../components/TaskCard";
 import CreateProjectModal from "../components/CreateProjectModal";
@@ -13,6 +12,8 @@ export default function Dashboard() {
   const [filteredTasks, setFilteredTasks] = useState([]);
   const [showProjectModal, setShowProjectModal] = useState(false);
   const [showTaskModal, setShowTaskModal] = useState(false);
+  const [activeProjectFilter, setActiveProjectFilter] = useState("all");
+  const [activeTaskFilter, setActiveTaskFilter] = useState("all");
 
   useEffect(() => {
     fetchData();
@@ -33,53 +34,60 @@ export default function Dashboard() {
   };
 
   /* ---------------- PROJECT FILTER ---------------- */
-    const sortProjects = (type) => {
-      let filtered = [...projects];
+  const sortProjects = (type) => {
+    console.log("Project filter clicked:", type); // Debug log
+    setActiveProjectFilter(type);
+    
+    let filtered = [...projects];
 
-      switch (type) {
-        case "todo":
-          filtered = filtered.filter(p => p.status === "Todo");
-          break;
-        case "inProgress":
-          filtered = filtered.filter(p => p.status === "In Progress");
-          break;
-        case "completed":
-          filtered = filtered.filter(p => p.status === "Completed");
-          break;
-        case "blocked":
-          filtered = filtered.filter(p => p.status === "Blocked");
-          break;
-        default:
-          filtered = [...projects]; // All
-      }
+    switch (type) {
+      case "todo": // ← Button should pass "todo"
+        filtered = filtered.filter(p => p.status === "To Do");
+        break;
+      case "inprogress": // ← Button should pass "inprogress"
+        filtered = filtered.filter(p => p.status === "In-progress");
+        break;
+      case "completed":
+        filtered = filtered.filter(p => p.status === "Completed");
+        break;
+      case "blocked":
+        filtered = filtered.filter(p => p.status === "Blocked");
+        break;
+      default:
+        filtered = [...projects]; // All
+    }
 
-      setFilteredProjects(filtered);
-    };
-
+    console.log("Filtered projects count:", filtered.length);
+    setFilteredProjects(filtered);
+  };
 
   /* ---------------- TASK FILTER ---------------- */
   const sortTasks = (type) => {
-  let filtered = [...tasks];
+    console.log("Task filter clicked:", type); // Debug log
+    setActiveTaskFilter(type);
+    
+    let filtered = [...tasks];
 
-  switch (type) {
-    case "todo":
-      filtered = filtered.filter(t => t.status === "Todo");
-      break;
-    case "inProgress":
-      filtered = filtered.filter(t => t.status === "In Progress");
-      break;
-    case "completed":
-      filtered = filtered.filter(t => t.status === "Completed");
-      break;
-    case "blocked":
-      filtered = filtered.filter(t => t.status === "Blocked");
-      break;
-    default:
-      filtered = [...tasks];
-  }
+    switch (type) {
+      case "todo": // ← Button should pass "todo"
+        filtered = filtered.filter(t => t.status === "To Do");
+        break;
+      case "inprogress": // ← Button should pass "inprogress"
+        filtered = filtered.filter(t => t.status === "In-progress");
+        break;
+      case "completed":
+        filtered = filtered.filter(t => t.status === "Completed");
+        break;
+      case "blocked":
+        filtered = filtered.filter(t => t.status === "Blocked");
+        break;
+      default:
+        filtered = [...tasks];
+    }
 
-  setFilteredTasks(filtered);
-};
+    console.log("Filtered tasks count:", filtered.length);
+    setFilteredTasks(filtered);
+  };
 
   return (
     <div>
@@ -91,13 +99,38 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* Project Filter */}
+      {/* Project Filter - FIXED: Use lowercase values */}
       <div className="mb-3">
-        <button onClick={() => sortProjects("all")} className="btn btn-outline-secondary btn-sm me-2">All</button>
-        <button onClick={() => sortProjects("todo")} className="btn btn-outline-secondary btn-sm me-2">Todo</button>
-        <button onClick={() => sortProjects("inProgress")} className="btn btn-outline-secondary btn-sm me-2">In Progress</button>
-        <button onClick={() => sortProjects("completed")} className="btn btn-outline-secondary btn-sm me-2">Completed</button>
-        <button onClick={() => sortProjects("blocked")} className="btn btn-outline-secondary btn-sm">Blocked</button>
+        <button 
+          onClick={() => sortProjects("all")} 
+          className={`btn btn-sm me-2 ${activeProjectFilter === "all" ? "btn-primary" : "btn-outline-secondary"}`}
+        >
+          All
+        </button>
+        <button 
+          onClick={() => sortProjects("todo")} // ← "todo" not "To Do"
+          className={`btn btn-sm me-2 ${activeProjectFilter === "todo" ? "btn-primary" : "btn-outline-secondary"}`}
+        >
+          To Do
+        </button>
+        <button 
+          onClick={() => sortProjects("inprogress")} // ← "inprogress" not "In-progress"
+          className={`btn btn-sm me-2 ${activeProjectFilter === "inprogress" ? "btn-primary" : "btn-outline-secondary"}`}
+        >
+          In Progress
+        </button>
+        <button 
+          onClick={() => sortProjects("completed")} 
+          className={`btn btn-sm me-2 ${activeProjectFilter === "completed" ? "btn-primary" : "btn-outline-secondary"}`}
+        >
+          Completed
+        </button>
+        <button 
+          onClick={() => sortProjects("blocked")} 
+          className={`btn btn-sm ${activeProjectFilter === "blocked" ? "btn-primary" : "btn-outline-secondary"}`}
+        >
+          Blocked
+        </button>
       </div>
 
       <div className="row g-4 mb-5">
@@ -122,15 +155,39 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* Task Filter */}
-        <div className="mb-3">
-          <button onClick={() => sortTasks("all")} className="btn btn-outline-secondary btn-sm me-2">All</button>
-          <button onClick={() => sortTasks("todo")} className="btn btn-outline-secondary btn-sm me-2">Todo</button>
-          <button onClick={() => sortTasks("inProgress")} className="btn btn-outline-secondary btn-sm me-2">In Progress</button>
-          <button onClick={() => sortTasks("completed")} className="btn btn-outline-secondary btn-sm me-2">Completed</button>
-          <button onClick={() => sortTasks("blocked")} className="btn btn-outline-secondary btn-sm">Blocked</button>
-        </div>
-
+      {/* Task Filter - FIXED: Use lowercase values */}
+      <div className="mb-3">
+        <button 
+          onClick={() => sortTasks("all")} 
+          className={`btn btn-sm me-2 ${activeTaskFilter === "all" ? "btn-primary" : "btn-outline-secondary"}`}
+        >
+          All
+        </button>
+        <button 
+          onClick={() => sortTasks("todo")} // ← "todo" not "To Do"
+          className={`btn btn-sm me-2 ${activeTaskFilter === "todo" ? "btn-primary" : "btn-outline-secondary"}`}
+        >
+          To Do
+        </button>
+        <button 
+          onClick={() => sortTasks("inprogress")} // ← "inprogress" not "In-progress"
+          className={`btn btn-sm me-2 ${activeTaskFilter === "inprogress" ? "btn-primary" : "btn-outline-secondary"}`}
+        >
+          In Progress
+        </button>
+        <button 
+          onClick={() => sortTasks("completed")} 
+          className={`btn btn-sm me-2 ${activeTaskFilter === "completed" ? "btn-primary" : "btn-outline-secondary"}`}
+        >
+          Completed
+        </button>
+        <button 
+          onClick={() => sortTasks("blocked")} 
+          className={`btn btn-sm ${activeTaskFilter === "blocked" ? "btn-primary" : "btn-outline-secondary"}`}
+        >
+          Blocked
+        </button>
+      </div>
 
       <div className="row g-4">
         {filteredTasks?.length > 0 ? (
@@ -144,8 +201,16 @@ export default function Dashboard() {
         )}
       </div>
 
-      <CreateProjectModal show={showProjectModal} handleClose={() => setShowProjectModal(false)} refresh={fetchData}/>
-      <CreateTaskModal show={showTaskModal} handleClose={() => setShowTaskModal(false)} refresh={fetchData} />
+      <CreateProjectModal 
+        show={showProjectModal} 
+        handleClose={() => setShowProjectModal(false)} 
+        refresh={fetchData}
+      />
+      <CreateTaskModal 
+        show={showTaskModal} 
+        handleClose={() => setShowTaskModal(false)} 
+        refresh={fetchData} 
+      />
     </div>
   );
 }
