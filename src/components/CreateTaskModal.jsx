@@ -6,13 +6,18 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
   const [projects, setProjects] = useState([]);
   const [teams, setTeams] = useState([]);
 
-  const [form, setForm] = useState({
+  const initialState = {
     name: "",
     projectId: "",
     teamId: "",
     dueDate: "",
-    timeToComplete: ""
-  });
+    timeToComplete: "",
+    status: "Todo",        
+    priority: "Medium"
+  };
+   
+  const [form, setForm] = useState(initialState);
+ 
 
   useEffect(() => {
     if (show) {
@@ -22,6 +27,11 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
   }, [show]);
 
   const handleSubmit = async () => {
+    if (!form.name || !form.projectId || !form.teamId || !form.dueDate || !form.timeToComplete) {
+    alert("Please fill all required fields");
+    return;
+  }
+
     await api("/task/create", "POST", {
       ...form,
       timeToComplete: Number(form.timeToComplete),
@@ -33,8 +43,13 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
     handleClose();
   };
 
+  const handleCloseModal = () => {
+  setForm(initialState);
+  handleClose();
+};
+
   return (
-    <Modal show={show} onHide={handleClose} centered>
+    <Modal show={show} onHide={handleCloseModal} centered>
       <Modal.Header closeButton>
         <Modal.Title>Create New Task</Modal.Title>
       </Modal.Header>
@@ -44,6 +59,7 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
         <Form.Group className="mb-3">
           <Form.Label>Select Project</Form.Label>
           <Form.Select
+            value={form.projectId}
             onChange={(e) => setForm({ ...form, projectId: e.target.value })}
           >
             <option value="">Dropdown</option>
@@ -57,15 +73,44 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
         <Form.Group className="mb-3">
           <Form.Label>Task Name</Form.Label>
           <Form.Control
+            value={form.name}
             placeholder="Enter Task Name"
             onChange={(e) => setForm({ ...form, name: e.target.value })}
           />
+        </Form.Group>
+          
+        {/*Staus*/}
+        <Form.Group className="mb-3">
+          <Form.Label>Status</Form.Label>
+          <Form.Select
+            value={form.status}
+            onChange={(e) => setForm({ ...form, status: e.target.value })}
+          >
+            <option value="Todo">Todo</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+            <option value="Blocked">Blocked</option>
+          </Form.Select>
+        </Form.Group>
+        
+        {/*Priority*/ }
+        <Form.Group className="mb-3">
+          <Form.Label>Priority</Form.Label>
+          <Form.Select
+            value={form.priority}
+            onChange={(e) => setForm({ ...form, priority: e.target.value })}
+          >
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </Form.Select>
         </Form.Group>
 
         {/* Select Team */}
         <Form.Group className="mb-3">
           <Form.Label>Select Team</Form.Label>
           <Form.Select
+            value={form.teamId}
             onChange={(e) => setForm({ ...form, teamId: e.target.value })}
           >
             <option value="">Dropdown</option>
@@ -82,6 +127,7 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
               <Form.Label>Select Due date</Form.Label>
               <Form.Control
                 type="date"
+                value={form.dueDate}
                 onChange={(e) => setForm({ ...form, dueDate: e.target.value })}
               />
             </Form.Group>
@@ -93,6 +139,7 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
               <Form.Control
                 placeholder="Enter Time in Days"
                 type="number"
+                value={form.timeToComplete}
                 onChange={(e) =>
                   setForm({ ...form, timeToComplete: e.target.value })
                 }
@@ -103,7 +150,7 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
       </Modal.Body>
 
       <Modal.Footer>
-        <Button variant="secondary" onClick={handleClose}>
+        <Button variant="secondary" onClick={handleCloseModal}>
           Cancel
         </Button>
         <Button variant="primary" onClick={handleSubmit}>

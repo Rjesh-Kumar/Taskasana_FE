@@ -84,16 +84,28 @@ export default function ProjectDetails() {
             </tr>
           </thead>
           <tbody>
-            {filteredTasks.map((task) => (
-              <tr key={task._id} style={{ cursor: "pointer" }} onClick={() => navigate(`/task/${task._id}`)}>
-                <td>{task.name}</td>
-                <td>{task.owners?.map(o => o.name).join(", ") || "—"}</td>
-                <td>{task.priority || "Medium"}</td>
-                <td>{formatDateTime(task.dueDate)}</td>
-                <td><StatusBadge status={task.status} /></td>
-              </tr>
-            ))}
-          </tbody>
+              {filteredTasks.length === 0 ? (
+                <tr>
+                  <td colSpan="5" className="text-center text-muted py-4">
+                    No tasks available for this project
+                  </td>
+                </tr>
+              ) : (
+                filteredTasks.map((task) => (
+                  <tr
+                    key={task._id}
+                    style={{ cursor: "pointer" }}
+                    onClick={() => navigate(`/task/${task._id}`)}
+                  >
+                    <td>{task.name}</td>
+                    <td>{task.owners?.map(o => o.name).join(", ") || "—"}</td>
+                    <td>{task.priority || "Medium"}</td>
+                    <td>{formatDateTime(task.dueDate)}</td>
+                    <td><StatusBadge status={task.status} /></td>
+                  </tr>
+                ))
+              )}
+            </tbody>
         </table>
       </div>
 

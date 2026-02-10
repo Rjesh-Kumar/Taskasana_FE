@@ -33,49 +33,56 @@ export default function Dashboard() {
   };
 
   /* ---------------- PROJECT FILTER ---------------- */
-  const sortProjects = (type) => {
-    let sorted = [...projects];
-    switch(type) {
-      case "inProgress":
-        sorted = sorted.filter(p => p.status === "In Progress");
-        break;
-      case "completed":
-        sorted = sorted.filter(p => p.status === "Completed");
-        break;
-      default:
-        sorted = [...projects];
-    }
-    setFilteredProjects(sorted);
-  };
+    const sortProjects = (type) => {
+      let filtered = [...projects];
+
+      switch (type) {
+        case "todo":
+          filtered = filtered.filter(p => p.status === "Todo");
+          break;
+        case "inProgress":
+          filtered = filtered.filter(p => p.status === "In Progress");
+          break;
+        case "completed":
+          filtered = filtered.filter(p => p.status === "Completed");
+          break;
+        case "blocked":
+          filtered = filtered.filter(p => p.status === "Blocked");
+          break;
+        default:
+          filtered = [...projects]; // All
+      }
+
+      setFilteredProjects(filtered);
+    };
+
 
   /* ---------------- TASK FILTER ---------------- */
   const sortTasks = (type) => {
-    let sorted = [...tasks];
-    switch(type) {
-      case "inProgress":
-        sorted = sorted.filter(t => t.status === "In Progress");
-        break;
-      case "completed":
-        sorted = sorted.filter(t => t.status === "Completed");
-        break;
-      default:
-        sorted = [...tasks];
-    }
-    setFilteredTasks(sorted);
-  };
+  let filtered = [...tasks];
+
+  switch (type) {
+    case "todo":
+      filtered = filtered.filter(t => t.status === "Todo");
+      break;
+    case "inProgress":
+      filtered = filtered.filter(t => t.status === "In Progress");
+      break;
+    case "completed":
+      filtered = filtered.filter(t => t.status === "Completed");
+      break;
+    case "blocked":
+      filtered = filtered.filter(t => t.status === "Blocked");
+      break;
+    default:
+      filtered = [...tasks];
+  }
+
+  setFilteredTasks(filtered);
+};
 
   return (
     <div>
-      {/* SEARCH BAR */}
-      <div className="d-flex justify-content-end mb-4">
-        <div className="input-group mx-auto w-100" style={{ maxWidth: "1000px" }}>
-          <input type="text" className="form-control" placeholder="Search" />
-          <button className="btn btn-outline-secondary">
-            <BsSearch />
-          </button>
-        </div>
-      </div>
-
       {/* PROJECTS */}
       <div className="d-flex justify-content-between align-items-center mb-2">
         <h5 className="fw-bold m-0">Projects</h5>
@@ -86,14 +93,16 @@ export default function Dashboard() {
 
       {/* Project Filter */}
       <div className="mb-3">
-        <button className="btn btn-outline-secondary btn-sm me-2" onClick={() => sortProjects("all")}>All</button>
-        <button className="btn btn-outline-secondary btn-sm me-2" onClick={() => sortProjects("inProgress")}>In Progress</button>
-        <button className="btn btn-outline-secondary btn-sm" onClick={() => sortProjects("completed")}>Completed</button>
+        <button onClick={() => sortProjects("all")} className="btn btn-outline-secondary btn-sm me-2">All</button>
+        <button onClick={() => sortProjects("todo")} className="btn btn-outline-secondary btn-sm me-2">Todo</button>
+        <button onClick={() => sortProjects("inProgress")} className="btn btn-outline-secondary btn-sm me-2">In Progress</button>
+        <button onClick={() => sortProjects("completed")} className="btn btn-outline-secondary btn-sm me-2">Completed</button>
+        <button onClick={() => sortProjects("blocked")} className="btn btn-outline-secondary btn-sm">Blocked</button>
       </div>
 
       <div className="row g-4 mb-5">
         {filteredProjects?.length > 0 ? (
-          filteredProjects.slice(0, 3).map((project) => (
+          filteredProjects.map((project) => (
             <div className="col-md-4" key={project._id}>
               <ProjectCard project={project} />
             </div>
@@ -114,11 +123,14 @@ export default function Dashboard() {
       </div>
 
       {/* Task Filter */}
-      <div className="mb-3">
-        <button className="btn btn-outline-secondary btn-sm me-2" onClick={() => sortTasks("all")}>All</button>
-        <button className="btn btn-outline-secondary btn-sm me-2" onClick={() => sortTasks("inProgress")}>In Progress</button>
-        <button className="btn btn-outline-secondary btn-sm" onClick={() => sortTasks("completed")}>Completed</button>
-      </div>
+        <div className="mb-3">
+          <button onClick={() => sortTasks("all")} className="btn btn-outline-secondary btn-sm me-2">All</button>
+          <button onClick={() => sortTasks("todo")} className="btn btn-outline-secondary btn-sm me-2">Todo</button>
+          <button onClick={() => sortTasks("inProgress")} className="btn btn-outline-secondary btn-sm me-2">In Progress</button>
+          <button onClick={() => sortTasks("completed")} className="btn btn-outline-secondary btn-sm me-2">Completed</button>
+          <button onClick={() => sortTasks("blocked")} className="btn btn-outline-secondary btn-sm">Blocked</button>
+        </div>
+
 
       <div className="row g-4">
         {filteredTasks?.length > 0 ? (
