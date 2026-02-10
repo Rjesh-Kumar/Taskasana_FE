@@ -3,16 +3,21 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [react()],
+  base: '/', // Add this line
   build: {
     outDir: 'dist',
     rollupOptions: {
-      output: {
-        manualChunks: undefined
+      input: {
+        main: 'index.html'
       }
     }
   },
-  // Add this for SPA support
   server: {
-    historyApiFallback: true
+    historyApiFallback: {
+      disableDotRule: true,
+      rewrites: [
+        { from: /./, to: '/index.html' }
+      ]
+    }
   }
 })

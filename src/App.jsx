@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from "react-router-dom"; // ✅ FIXED IMPORT
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "./context/AuthContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -17,8 +17,8 @@ import Layout from "./components/Layout";
 function App() {
   return (
     <AuthProvider>
-      {/* ✅ Now HashRouter is imported */}
-      <HashRouter>
+      {/* ✅ Add basename="/" */}
+      <BrowserRouter basename="/">
         <ToastContainer position="top-right" autoClose={2000} />
         <Routes>
           <Route path="/" element={<Login />} />
@@ -36,7 +36,7 @@ function App() {
             <Route path="/settings" element={<Settings />} />
           </Route>
         </Routes>
-      </HashRouter>
+      </BrowserRouter>
     </AuthProvider>
   );
 }
