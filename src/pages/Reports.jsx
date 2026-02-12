@@ -25,7 +25,7 @@ export default function Reports() {
 
   // Prepare chart data
   const teamChartData = {
-    labels: data.closedByTeam.map(t => t._id),
+    labels: data.closedByTeam.map(t => t.teamName),
     datasets: [
       {
         label: "Tasks Closed by Team",
@@ -36,7 +36,7 @@ export default function Reports() {
   };
 
   const ownerChartData = {
-    labels: data.closedByOwner.map(o => o._id),
+    labels: data.closedByOwner.map(o => o.ownerName),
     datasets: [
       {
         label: "Tasks Closed by Owner",
