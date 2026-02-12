@@ -67,7 +67,7 @@ export default function TaskDetails() {
         <div><strong>Time Remaining:</strong> {getTimeRemaining()}</div>
 
         {task.status !== "Completed" && (
-          <button className="btn btn-success mt-3" onClick={markComplete}>
+          <button className="btn btn-success mt-3 ms-2" onClick={markComplete}>
             ✔ Mark as Complete
           </button>
  
