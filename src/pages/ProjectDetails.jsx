@@ -16,6 +16,11 @@ export default function ProjectDetails() {
     fetchProject();
   }, [id]);
 
+  useEffect(() => {
+  console.log("TASKS:", tasks);
+}, [tasks]);
+
+
   const fetchProject = async () => {
     try {
       const proj = await api(`/project/${id}`);
