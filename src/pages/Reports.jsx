@@ -10,6 +10,8 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import Loader from "../components/Loader";
+
 
 // Register chart components
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
@@ -21,7 +23,7 @@ export default function Reports() {
     api("/reports/overview").then(setData);
   }, []);
 
-  if (!data) return <p>Loading reports...</p>;
+ if (!data) return <Loader text="Preparing reports..." />;
 
   // Prepare chart data
   const teamChartData = {

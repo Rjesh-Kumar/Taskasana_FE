@@ -4,6 +4,7 @@ import ProjectCard from "../components/ProjectCard";
 import TaskCard from "../components/TaskCard";
 import CreateProjectModal from "../components/CreateProjectModal";
 import CreateTaskModal from "../components/CreateTaskModal";
+import Loader from "../components/Loader";
 
 export default function Dashboard() {
   const [projects, setProjects] = useState([]);
@@ -14,6 +15,8 @@ export default function Dashboard() {
   const [showTaskModal, setShowTaskModal] = useState(false);
   const [activeProjectFilter, setActiveProjectFilter] = useState("all");
   const [activeTaskFilter, setActiveTaskFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+
 
   useEffect(() => {
     fetchData();
@@ -21,6 +24,8 @@ export default function Dashboard() {
 
   const fetchData = async () => {
     try {
+      setLoading(true);
+
       const projectRes = await api("/project"); 
       const taskRes = await api("/task");       
 
@@ -30,6 +35,8 @@ export default function Dashboard() {
       setFilteredTasks(taskRes);
     } catch (err) {
       console.error("Dashboard fetch error:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -88,6 +95,8 @@ export default function Dashboard() {
     console.log("Filtered tasks count:", filtered.length);
     setFilteredTasks(filtered);
   };
+
+  if (loading) return <Loader text="Loading dashboard..." />;
 
   return (
     <div>

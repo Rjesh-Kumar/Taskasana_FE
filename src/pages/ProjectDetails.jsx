@@ -3,6 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import StatusBadge from "../components/StatusBadge";
 import CreateTaskModal from "../components/CreateTaskModal";
+import Loader from "../components/Loader";
 
 export default function ProjectDetails() {
   const { id } = useParams();
@@ -46,7 +47,7 @@ export default function ProjectDetails() {
     return `${date.toLocaleDateString()} ${date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`;
   };
 
-  if (!project) return <p>Loading...</p>;
+  if (!project) return <Loader text="Loading project..." />;
 
   return (
     <div>

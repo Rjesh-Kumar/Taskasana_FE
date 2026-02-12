@@ -2,6 +2,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import api from "../api/api";
 import StatusBadge from "../components/StatusBadge";
+import Loader from "../components/Loader";
+
 
 export default function TaskDetails() {
   const { id } = useParams();
@@ -44,7 +46,7 @@ export default function TaskDetails() {
     return days > 0 ? `${days} days left` : `${hours} hours left`;
   };
 
-  if (!task) return <p className="text-center mt-5">Loading task...</p>;
+  if (!task) return <Loader text="Loading task details..." />;
 
   return (
     <div className="container mt-4">
@@ -64,6 +66,7 @@ export default function TaskDetails() {
         <div><strong>Tags:</strong> {task.tags?.join(", ") || "None"}</div>
         <div><strong>Due Date:</strong> {formatDateTime(task.dueDate)}</div>
         <div><strong>Status:</strong> <StatusBadge status={task.status} /></div>
+        <div><strong>Priority:</strong> {task.priority || "N/A"}</div>
         <div><strong>Time Remaining:</strong> {getTimeRemaining()}</div>
 
         {task.status !== "Completed" && (
