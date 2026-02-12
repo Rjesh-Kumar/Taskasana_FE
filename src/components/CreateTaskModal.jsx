@@ -2,9 +2,11 @@ import { useEffect, useState } from "react";
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import api from "../api/api";
 
-export default function CreateTaskModal({ show, handleClose, refresh }) {
+export default function CreateTaskModal({ show, handleClose, refresh, projectId }) {
   const [projects, setProjects] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [teamMembers, setTeamMembers] = useState([]);
+  const [tagsInput, setTagsInput] = useState("");
 
   const initialState = {
     name: "",
@@ -15,6 +17,7 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
     status: "To Do",
     priority: "Medium",
     description: "",
+    owners: []
   };
 
   const [form, setForm] = useState(initialState);
@@ -26,6 +29,22 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
       api("/team").then(setTeams).catch(err => console.error(err));
     }
   }, [show]);
+
+  useEffect(() => {
+  if (projectId && show) {
+    setForm(prev => ({ ...prev, projectId }));
+  }
+}, [projectId, show]);
+
+
+  useEffect(() => {
+  if (form.teamId) {
+    api(`/team/${form.teamId}`)
+      .then(team => setTeamMembers(team.members || []))
+      .catch(err => console.error(err));
+  }
+}, [form.teamId]);
+
 
   const handleSubmit = async () => {
     // Validation
@@ -42,7 +61,9 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
         timeToComplete: Number(form.timeToComplete),
         status: form.status,
         priority: form.priority,
-        description: form.description || ""
+        description: form.description || "",
+        owners: form.owners || [],                 
+        tags: tagsInput.split(",").map(t => t.trim()).filter(Boolean)
       });
 
       if (refresh) refresh(); // refresh parent dashboard
@@ -55,6 +76,8 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
 
   const handleCloseModal = () => {
     setForm(initialState);
+    setTagsInput("");        
+    setTeamMembers([]);   
     handleClose();
   };
 
@@ -131,7 +154,7 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
           <Form.Label>Select Team</Form.Label>
           <Form.Select
             value={form.teamId}
-            onChange={e => setForm({ ...form, teamId: e.target.value })}
+            onChange={e => setForm({ ...form, teamId: e.target.value, owners: [] })}
           >
             <option value="">Select Team</option>
             {teams.map(t => (
@@ -139,6 +162,35 @@ export default function CreateTaskModal({ show, handleClose, refresh }) {
             ))}
           </Form.Select>
         </Form.Group>
+        {/*Select Ownersx*/}
+        <Form.Group className="mb-3">
+            <Form.Label>Assign Owners</Form.Label>
+            <Form.Select
+              multiple
+              value={form.owners || []}
+              onChange={(e) => {
+                const selected = Array.from(e.target.selectedOptions, option => option.value);
+                setForm({ ...form, owners: selected });
+              }}
+            >
+              {teamMembers.map(member => (
+                <option key={member._id} value={member._id}>
+                  {member.name}
+                </option>
+              ))}
+            </Form.Select>
+            <small className="text-muted">Hold Ctrl (Windows) or Cmd (Mac) to select multiple</small>
+          </Form.Group>
+          
+          {/*Tag field */}
+          <Form.Group className="mb-3">
+            <Form.Label>Tags (comma separated)</Form.Label>
+            <Form.Control
+              placeholder="frontend, urgent, bug"
+              value={tagsInput}
+              onChange={(e) => setTagsInput(e.target.value)}
+            />
+          </Form.Group>
 
         {/* Due Date + Estimated Time */}
         <Row>
