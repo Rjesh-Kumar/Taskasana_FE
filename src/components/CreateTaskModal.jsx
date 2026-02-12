@@ -162,28 +162,55 @@ export default function CreateTaskModal({ show, handleClose, refresh, projectId 
             ))}
           </Form.Select>
         </Form.Group>
-        
+
         {/*Select Ownersx*/}
-        <Form.Group className="mb-3">
+          <Form.Group className="mb-3">
             <Form.Label>Assign Owners</Form.Label>
-            <Form.Select
-              multiple
-              value={form.owners || []}
-              onChange={(e) => {
-                const selected = Array.from(e.target.selectedOptions, option => option.value);
-                setForm({ ...form, owners: selected });
-              }}
-            >
-              {teamMembers.map(member => (
-                <option key={member._id} value={member._id}>
-                  {member.name}
-                </option>
-              ))}
-            </Form.Select>
-            <small className="text-muted">Hold Ctrl (Windows) or Cmd (Mac) to select multiple</small>
+
+            {teamMembers.length === 0 ? (
+              <div className="text-muted small">Select a team first</div>
+            ) : (
+              <div
+                style={{
+                  maxHeight: "150px",
+                  overflowY: "auto",
+                  border: "1px solid #ddd",
+                  borderRadius: "6px",
+                  padding: "8px"
+                }}
+              >
+                {teamMembers.map(member => {
+                  const checked = form.owners.includes(member._id);
+
+                  return (
+                    <Form.Check
+                      key={member._id}
+                      type="checkbox"
+                      id={`owner-${member._id}`}
+                      label={member.name}
+                      checked={checked}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setForm({ ...form, owners: [...form.owners, member._id] });
+                        } else {
+                          setForm({
+                            ...form,
+                            owners: form.owners.filter(id => id !== member._id)
+                          });
+                        }
+                      }}
+                      className="mb-1"
+                    />
+                  );
+                })}
+              </div>
+            )}
+
+            <small className="text-muted">You can select multiple team members</small>
           </Form.Group>
+ 
           
-          {/*Tag field */}
+        {/*Tag field */}
           <Form.Group className="mb-3">
             <Form.Label>Tags (comma separated)</Form.Label>
             <Form.Control

@@ -72,6 +72,14 @@ export default function TaskDetails() {
           </button>
  
         )}
+
+        <button
+            className="btn btn-primary mt-3 ms-2"
+            onClick={() => navigate(`/task/edit/${task._id}`)}
+          >
+            ✏️ Edit Task
+        </button>
+
         <button className="btn btn-danger mt-3 ms-2" onClick={handleDeleteTask}>
           Delete Task
         </button>

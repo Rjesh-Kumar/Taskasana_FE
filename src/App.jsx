@@ -13,6 +13,7 @@ import Reports from "./pages/Reports";
 import Settings from "./pages/Settings";
 import Register from "./pages/Register";
 import Layout from "./components/Layout";
+import EditTask from "./pages/EditTask";
 
 function App() {
   return (
@@ -34,6 +35,8 @@ function App() {
             <Route path="/task/:id" element={<TaskDetails />} />
             <Route path="/reports" element={<Reports />} />
             <Route path="/settings" element={<Settings />} />
+            <Route path="/task/edit/:id" element={<EditTask />} />
+
           </Route>
         </Routes>
       </Router>
