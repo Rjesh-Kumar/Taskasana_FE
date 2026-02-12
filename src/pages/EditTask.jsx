@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { Form, Button, Row, Col, Card } from "react-bootstrap";
 import api from "../api/api";
+import Loader from "../components/Loader";
 
 export default function EditTask() {
   const { id } = useParams();
@@ -51,7 +52,8 @@ export default function EditTask() {
     navigate(`/task/${id}`);
   };
 
-  if (!form) return <p className="text-center mt-5">Loading task...</p>;
+  if (!form) return <Loader text="Loading task details..." />;
+
 
   return (
     <div className="container mt-4">

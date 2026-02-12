@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { Container, Card, Button, ListGroup } from "react-bootstrap";
 import { api } from "../api/api";
 import AddMemberModal from "../components/AddMemberModal";
+import Loader from "../components/Loader";
 
 export default function TeamDetails() {
   const { id } = useParams();
@@ -24,7 +25,8 @@ export default function TeamDetails() {
     fetchTeam();
   }, [id]);
 
-  if (!team) return <p className="text-center mt-5">Loading...</p>;
+  if (!team) return <Loader text="Loading team details..." />;
+
 
   return (
     <Container className="mt-4">

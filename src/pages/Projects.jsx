@@ -2,20 +2,26 @@ import { useEffect, useState } from "react";
 import { api } from "../api/api";
 import ProjectCard from "../components/ProjectCard";
 import CreateProjectModal from "../components/CreateProjectModal";
+import Loader from "../components/Loader";
 
 export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [show, setShow] = useState(false);
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(true);
 
   const loadProjects = async () => {
-    try {
-      const data = await api("/project");
-      setProjects(data);
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  try {
+    setLoading(true);
+    const data = await api("/project");
+    setProjects(data);
+  } catch (err) {
+    console.error(err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     loadProjects();
@@ -42,11 +48,14 @@ export default function Projects() {
         </button>
       </div>
 
-      {filtered.length > 0 ? (
-        filtered.map(p => <ProjectCard key={p._id} project={p} />)
-      ) : (
-        <p className="text-center mt-4 text-muted">No Projects found</p>
-      )}
+      {loading ? (
+          <Loader text="Loading projects..." />
+        ) : filtered.length > 0 ? (
+          filtered.map(p => <ProjectCard key={p._id} project={p} />)
+        ) : (
+          <p className="text-center mt-4 text-muted">No Projects found</p>
+        )}
+
 
       <CreateProjectModal show={show} handleClose={() => setShow(false)} refresh={loadProjects} />
     </div>
